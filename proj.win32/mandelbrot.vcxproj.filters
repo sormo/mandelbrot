@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="../src/main.cpp" />
+    <ClCompile Include="..\src\PixelSprite.cpp" />
+    <ClCompile Include="..\src\mandelbrotMain.cpp" />
+    <ClCompile Include="..\src\Mandelbrot.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\PixelSprite.h" />
+    <ClInclude Include="..\src\Camera.h" />
+    <ClInclude Include="..\src\mandelbrotMain.h" />
+    <ClInclude Include="..\src\Mandelbrot.h" />
+  </ItemGroup>
+</Project>
