@@ -6,7 +6,7 @@ LOCAL_MODULE := main
 #SDK_ROOT points to folder with SDL and oxygine-framework
 LOCAL_SRC_FILES := ../../../..//SDL/src/main/android/SDL_android_main.c
 
-LOCAL_SRC_FILES += ../../../src/mandelbrot.cpp \
+LOCAL_SRC_FILES += ../../../src/mandelbrotMain.cpp \
                    ../../../src/main.cpp \
                    ../../../src/PixelSprite.cpp \
                    ../../../src/Mandelbrot.cpp

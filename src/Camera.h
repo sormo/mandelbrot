@@ -94,12 +94,12 @@ public:
 						p2 = &t.second;
 				}
 
-				Vector2 center = (p1->current + p2->current) / 2.0;
-				Vector2 prevCenter = (p1->previous + p2->previous) / 2.0;
+				Vector2 center = (p1->current + p2->current) / 2.0f;
+				Vector2 prevCenter = (p1->previous + p2->previous) / 2.0f;
 
-				double dist = p1->current.distance(p2->current);
-				double prevDist = p1->previous.distance(p2->previous);
-				double scale = dist / prevDist;
+				float dist = p1->current.distance(p2->current);
+				float prevDist = p1->previous.distance(p2->previous);
+				float scale = dist / prevDist;
 
 
 				Vector2 offset = center - prevCenter;
