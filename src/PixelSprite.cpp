@@ -51,3 +51,8 @@ void PixelSprite::ApplyPixelBuffer()
 
 	m_texture->updateRegion(0, 0, data);
 }
+
+void PixelSprite::Clear()
+{
+	memset(m_pixelBuffer.data(), 0, m_pixelBuffer.size());
+}

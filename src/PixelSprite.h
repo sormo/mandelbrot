@@ -15,6 +15,8 @@ public:
 	int GetWidth();
 	int GetHeight();
 
+	void Clear();
+
 private:
 	oxygine::spNativeTexture m_texture;
 

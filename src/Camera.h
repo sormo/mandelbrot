@@ -7,6 +7,7 @@ using namespace oxygine;
 DECLARE_SMART(Camera, spCamera);
 class Camera : public Actor
 {
+	static const size_t POSTPONED_WHEEL_EVENT_COUNT = 20;
 public:
 
 	spActor _content;
@@ -52,7 +53,7 @@ public:
 			if (it != _touches.end())
 				_touches.erase(it);
 
-			if (_touches.empty() && _onCameraChange)
+			if (_touches.empty() && _onCameraChange && !ev->bubbles)
 				_onCameraChange();
 		}
 
@@ -66,8 +67,7 @@ public:
 				_transform.scale(VectorD3(scale, scale, 1));
 				_transform.translate(VectorD3(pos.x, pos.y, 0));
 
-				if (_onCameraChange)
-					_onCameraChange();
+				m_postponedWheelChangeCounter = POSTPONED_WHEEL_EVENT_COUNT;
 			}
 		}
 
@@ -121,7 +121,16 @@ public:
 
 	void doUpdate(const UpdateState& us)
 	{
+		if (m_postponedWheelChangeCounter != 0)
+		{
+			m_postponedWheelChangeCounter--;
 
+			if (m_postponedWheelChangeCounter == 0)
+			{
+				if (_onCameraChange)
+					_onCameraChange();
+			}
+		}
 	}
 
 	void update()
@@ -144,9 +153,12 @@ public:
 	void reset()
 	{
 		_transform.identity();
+		update();
 	}
 
 	Matrix _transform;
 
 	std::function<void()> _onCameraChange;
+
+	size_t m_postponedWheelChangeCounter = 0;
 };

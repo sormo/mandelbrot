@@ -97,6 +97,14 @@ void MandelbrotPart::Apply()
 	m_isWorkerRunningLock.unlock();
 }
 
+void MandelbrotPart::Clear()
+{
+	m_isWorkerRunningLock.lock();
+	if (!m_isWorkerRunning)
+		m_sprite->Clear();
+	m_isWorkerRunningLock.unlock();
+}
+
 bool MandelbrotPart::IsRunning()
 {
 	return m_isWorkerRunning;
@@ -104,7 +112,7 @@ bool MandelbrotPart::IsRunning()
 
 // ---
 
-Mandelbrot::Mandelbrot()
+Mandelbrot::Mandelbrot(std::function<void()> onCameraChange)
 {
 	InitializeColors();
 
@@ -116,24 +124,16 @@ Mandelbrot::Mandelbrot()
 	m_camera->setSize(size);
 	m_camera->setContent(m_parent.get());
 
-	m_camera->_onCameraChange = [this]()
+	m_camera->_onCameraChange = [this, onCameraChange]()
 	{
 		m_scale *= m_camera->getCameraScale();
 
-		double pixelSize = GetPixelSize();
-
 		oxygine::Vector2 offset = m_camera->getCameraOffset();
-		oxygine::VectorD2 offsetIncrement = oxygine::VectorD2(offset.x, offset.y) * pixelSize;
+		oxygine::VectorD2 offsetIncrement = oxygine::VectorD2(offset.x, offset.y) *  GetPixelSize();
 
 		m_offset -= offsetIncrement;
 
-		for (auto & p : m_parts)
-		{
-			p->part.Update(m_offset.x, m_offset.y, pixelSize);
-			p->apply = true;
-		}
-
-		m_camera->reset();
+		onCameraChange();
 	};
 
 	const int WIDTH = 200;
@@ -150,12 +150,34 @@ Mandelbrot::Mandelbrot()
 			m_parts.push_back(std::unique_ptr<Part>(new Part(oxygine::Vector2{(float)x, (float)y}, width, height, m_parent.get())));
 		}
 	}
+}
+
+void Mandelbrot::Reset()
+{
+	for (auto & p : m_parts)
+	{
+		p->part.Clear();
+		p->part.Apply();
+	}
+
+	m_camera->reset();
+}
+
+void Mandelbrot::Update(oxygine::VectorD2 offset, double scale)
+{
+	m_offset = offset;
+	m_scale = scale;
 
 	for (auto & p : m_parts)
 	{
 		p->part.Update(m_offset.x, m_offset.y, GetPixelSize());
 		p->apply = true;
 	}
+}
+
+std::tuple<oxygine::VectorD2, double> Mandelbrot::GetCameraData()
+{
+	return std::tie(m_offset, m_scale);
 }
 
 double Mandelbrot::GetPixelSize()

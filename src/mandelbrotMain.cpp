@@ -11,7 +11,7 @@ void mandelbrotInit()
 	//load xml file with resources definition
 	gameResources.loadXML("res.xml");
 
-	spMandelbrot m = new Mandelbrot;
+	spMandelbrotParent m = new MandelbrotParent;
 	m->attachTo(oxygine::getStage());
 }
 
