@@ -9,6 +9,9 @@ PixelSprite::PixelSprite(int width, int height)
 	setAnimFrame(textureFrame);
 
 	m_pixelBuffer.resize(width * height * getBytesPerPixel(m_texture->getFormat()), 0);
+
+	Clear();
+	ApplyPixelBuffer();
 }
 
 int PixelSprite::GetWidth()

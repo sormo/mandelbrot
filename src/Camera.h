@@ -7,7 +7,7 @@ using namespace oxygine;
 DECLARE_SMART(Camera, spCamera);
 class Camera : public Actor
 {
-	static const size_t POSTPONED_WHEEL_EVENT_COUNT = 20;
+	static const size_t POSTPONED_CHANGE_EVENT_COUNT = 50;
 public:
 
 	spActor _content;
@@ -43,6 +43,8 @@ public:
 
 		if (te->type == TouchEvent::TOUCH_DOWN)
 		{
+			m_postponedChangeCounter = 0;
+
 			touch& t = _touches[te->index];
 			t.previous = t.current = pos;
 		}
@@ -51,10 +53,12 @@ public:
 		{
 			auto it = _touches.find(te->index);
 			if (it != _touches.end())
+			{
 				_touches.erase(it);
 
-			if (_touches.empty() && _onCameraChange && !ev->bubbles)
-				_onCameraChange();
+				if (_touches.empty())
+					m_postponedChangeCounter = POSTPONED_CHANGE_EVENT_COUNT;
+			}
 		}
 
 		if (te->type == TouchEvent::WHEEL_DIR)
@@ -67,7 +71,7 @@ public:
 				_transform.scale(VectorD3(scale, scale, 1));
 				_transform.translate(VectorD3(pos.x, pos.y, 0));
 
-				m_postponedWheelChangeCounter = POSTPONED_WHEEL_EVENT_COUNT;
+				m_postponedChangeCounter = POSTPONED_CHANGE_EVENT_COUNT;
 			}
 		}
 
@@ -121,11 +125,11 @@ public:
 
 	void doUpdate(const UpdateState& us)
 	{
-		if (m_postponedWheelChangeCounter != 0)
+		if (m_postponedChangeCounter != 0)
 		{
-			m_postponedWheelChangeCounter--;
+			m_postponedChangeCounter--;
 
-			if (m_postponedWheelChangeCounter == 0)
+			if (m_postponedChangeCounter == 0)
 			{
 				if (_onCameraChange)
 					_onCameraChange();
@@ -160,5 +164,5 @@ public:
 
 	std::function<void()> _onCameraChange;
 
-	size_t m_postponedWheelChangeCounter = 0;
+	size_t m_postponedChangeCounter = 0;
 };

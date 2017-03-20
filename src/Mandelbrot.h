@@ -20,11 +20,12 @@ public:
 	~MandelbrotPart();
 	void Update(double x, double y, double pixelSize);
 
-	void Apply();
+	bool Apply();
 	void Clear();
 	bool IsRunning();
 
 private:
+	void StopWorker();
 	bool m_isWorkerRunning = false;
 	std::mutex m_isWorkerRunningLock;
 

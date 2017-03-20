@@ -48,16 +48,12 @@ MandelbrotPart::MandelbrotPart(oxygine::Vector2 position, int width, int height,
 
 MandelbrotPart::~MandelbrotPart()
 {
-	m_isWorkerRunning = false;
-	if (m_worker && m_worker->joinable())
-		m_worker->join();
+	StopWorker();
 }
 
 void MandelbrotPart::Update(double x, double y, double pixelSize)
 {
-	m_isWorkerRunning = false;
-	if (m_worker && m_worker->joinable())
-		m_worker->join();
+	StopWorker();
 
 	m_isWorkerRunningLock.lock();
 	m_isWorkerRunning = true;
@@ -89,25 +85,37 @@ void MandelbrotPart::Update(double x, double y, double pixelSize)
 	}));
 }
 
-void MandelbrotPart::Apply()
+bool MandelbrotPart::Apply()
 {
 	m_isWorkerRunningLock.lock();
+	// return true if worker is not running and buffer was applied
+	bool ret = !m_isWorkerRunning;
+
 	if (!m_isWorkerRunning)
 		m_sprite->ApplyPixelBuffer();
+
 	m_isWorkerRunningLock.unlock();
+
+	return ret;
 }
 
 void MandelbrotPart::Clear()
 {
-	m_isWorkerRunningLock.lock();
-	if (!m_isWorkerRunning)
-		m_sprite->Clear();
-	m_isWorkerRunningLock.unlock();
+	StopWorker();
+	
+	m_sprite->Clear();
 }
 
 bool MandelbrotPart::IsRunning()
 {
 	return m_isWorkerRunning;
+}
+
+void MandelbrotPart::StopWorker()
+{
+	m_isWorkerRunning = false;
+	if (m_worker && m_worker->joinable())
+		m_worker->join();
 }
 
 // ---
@@ -191,8 +199,8 @@ void Mandelbrot::doUpdate(const UpdateState & us)
 	{
 		if (p->apply && !p->part.IsRunning())
 		{
-			p->part.Apply();
-			p->apply = false;
+			if (p->part.Apply())
+				p->apply = false;
 		}
 	}
 }
