@@ -10,15 +10,16 @@
 #include <atomic>
 #include <memory>
 #include <tuple>
+#include <condition_variable>
 
-#define MAXIMUM_ESCAPE_ITERATIONS 128
+// TODO divide into separate classes
 
 class MandelbrotPart
 {
 public:
 	MandelbrotPart(oxygine::Vector2 position, int width, int height, oxygine::Actor * parent);
 	~MandelbrotPart();
-	void Update(double x, double y, double pixelSize);
+	void Update(double x, double y, double pixelSize, size_t maximumIterations);
 
 	bool Apply();
 	void Clear();
@@ -34,6 +35,13 @@ private:
 
 	const int m_width;
 	const int m_height;
+
+	size_t m_maximumIterations = 1024;
+
+	// 
+	std::vector<std::vector<size_t>> m_iterations;
+	size_t m_minIterations;
+	size_t m_maxIterations;
 };
 
 DECLARE_SMART(Mandelbrot, spMandelbrot);
@@ -49,6 +57,7 @@ public:
 private:
 	virtual void doUpdate(const UpdateState& us) override;
 	double GetPixelSize();
+	size_t GetMaximumIterations();
 
 	struct Part
 	{

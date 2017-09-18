@@ -60,3 +60,5 @@ gen
 *.apk
 /analyse/data/
 *.etl
+Release_v141_xp/
+Debug_v141_xp/
