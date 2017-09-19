@@ -2,7 +2,7 @@
 ### using Oxygine framework
 
 Visualization of mandelbrot set:  
-![](Mandelbrot.png)  
+![mandelbrot](https://user-images.githubusercontent.com/7541054/30611304-46c32e92-9d81-11e7-9c75-d45fd3c29c7c.png)
 
 Limitations:
 * Depth is limited by number of maximum escape iterations. After reaching certain zoom level contours of set loose complexity.  
